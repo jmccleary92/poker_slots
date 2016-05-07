@@ -271,23 +271,68 @@ public class Slots {
 				a = b;
 				b = hand.get(i+1);
 			}
+			if(b == null){
+				return false;
+			}
 			return true;
 		}
 	}
 
 	private boolean twoPair(ArrayList<Card> hand, int jokerCount) {
-		// TODO Auto-generated method stub
-		return false;
+		if(jokerCount > 0){
+			return false;
+		} else {
+			int i = 0;
+			int count = 0;
+			Card a = hand.get(i);
+			Card b = hand.get(i+1);
+			while(b != null && count < 2){
+				if(a.getRank() == b.getRank()){
+					count++;
+					i++;
+				}
+				i++;
+				a = hand.get(i);
+				b = hand.get(i+1);
+			}
+			if(count == 2){
+				return true;
+			}
+			return false;
+		}
 	}
 
 	private boolean threeOfAKind(ArrayList<Card> hand, int jokerCount) {
-		// TODO Auto-generated method stub
+		if(jokerCount > 2){
+			return false;
+		} else if(jokerCount == 2){
+			return true;
+		} else if (jokerCount == 1){
+			ArrayList<Card> newHand = hand;
+			newHand.remove(0);
+			return pair(newHand,0);
+		} else {
+			if(hand.get(0).getRank() == hand.get(2).getRank() ||
+			   hand.get(2).getRank() == hand.get(4).getRank() ||
+			   hand.get(1).getRank() == hand.get(3).getRank()){
+				return true;
+			}
+		}
 		return false;
 	}
 
 	private boolean straight(ArrayList<Card> hand, int jokerCount) {
-		// TODO Auto-generated method stub
-		return false;
+		if(jokerCount > 3){
+			return false; // more than 3 jokers means either a straight flush or royal flush
+		} else {
+			Card a = hand.get(jokerCount);
+			Card b = hand.get(jokerCount+1);
+			if(a.getRank()-b.getRank()-1 > jokerCount){
+				return false;
+			}
+			// TODO
+			return false;
+		}
 	}
 
 	private boolean flush(ArrayList<Card> hand, int jokerCount) {
