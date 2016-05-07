@@ -261,11 +261,17 @@ public class Slots {
 		if(jokerCount > 1){
 			return false;
 		} else if(jokerCount == 1){
-			ArrayList<Card> newHand = hand;
-			newHand.remove(0);
-			return !pair(newHand,0);
+			return true;
 		} else {
-			
+			int i = 0;
+			Card a = hand.get(i);
+			Card b = hand.get(i+1);
+			while(a.getRank()!= b.getRank() && b != null){
+				i++;
+				a = b;
+				b = hand.get(i+1);
+			}
+			return true;
 		}
 	}
 
