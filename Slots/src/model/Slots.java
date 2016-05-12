@@ -258,15 +258,15 @@ public class Slots {
 	}
 
 	private boolean pair(ArrayList<Card> hand, int jokerCount) {
-		if(jokerCount > 1){
+		if(jokerCount > 1){ // more than 1 Joker means at least 3 of a kind
 			return false;
-		} else if(jokerCount == 1){
+		} else if(jokerCount == 1){ // must be a match with only one Joker
 			return true;
-		} else {
+		} else { // must be dealt only a single pair
 			int i = 0;
 			Card a = hand.get(i);
 			Card b = hand.get(i+1);
-			while(a.getRank()!= b.getRank() && b != null){
+			while(a.getRank()!= b.getRank() && b != null){ // iterate through the hand
 				i++;
 				a = b;
 				b = hand.get(i+1);
@@ -279,14 +279,14 @@ public class Slots {
 	}
 
 	private boolean twoPair(ArrayList<Card> hand, int jokerCount) {
-		if(jokerCount > 0){
+		if(jokerCount > 0){ // must be dealt two pair
 			return false;
 		} else {
 			int i = 0;
 			int count = 0;
 			Card a = hand.get(i);
 			Card b = hand.get(i+1);
-			while(b != null && count < 2){
+			while(b != null && count < 2){ // keep track of pairs while iterating
 				if(a.getRank() == b.getRank()){
 					count++;
 					i++;
@@ -303,18 +303,18 @@ public class Slots {
 	}
 
 	private boolean threeOfAKind(ArrayList<Card> hand, int jokerCount) {
-		if(jokerCount > 2){
+		if(jokerCount > 2){ // more than 2 Jokers means at least 4 of a kind
 			return false;
-		} else if(jokerCount == 2){
+		} else if(jokerCount == 2){ // matches any card in hand with 2 Jokers
 			return true;
-		} else if (jokerCount == 1){
+		} else if (jokerCount == 1){ // take out the Joker and find a pair
 			ArrayList<Card> newHand = hand;
 			newHand.remove(0);
 			return pair(newHand,0);
-		} else {
-			if(hand.get(0).getRank() == hand.get(2).getRank() ||
-			   hand.get(2).getRank() == hand.get(4).getRank() ||
-			   hand.get(1).getRank() == hand.get(3).getRank()){
+		} else { // check all options for spans of 3 with the same rank
+			if(hand.get(0) != null && hand.get(2) != null && hand.get(0).getRank() == hand.get(2).getRank() ||
+			   hand.get(2) != null && hand.get(4) != null && hand.get(2).getRank() == hand.get(4).getRank() ||
+			   hand.get(1) != null && hand.get(3) != null && hand.get(1).getRank() == hand.get(3).getRank()){
 				return true;
 			}
 		}
@@ -385,7 +385,8 @@ public class Slots {
 					return false;
 				} else {
 					a = hand.get(0);
-					if (hand.get(2).getRank() != a.getRank() && hand.get(2).getRank() != b.getRank()){ // middle card must match something
+					if (hand.get(2).getRank() != a.getRank() &&
+						hand.get(2).getRank() != b.getRank()){ // middle card must match something
 						return false;
 					} else { // if we get here, we have a full house!
 						return true;
@@ -396,8 +397,23 @@ public class Slots {
 	}
 
 	private boolean fourOfAKind(ArrayList<Card> hand, int jokerCount) {
-		// TODO Auto-generated method stub
-		return false;
+		if(jokerCount > 3){ // more than 3 Jokers means a straight or royal flush
+			return false;
+		} else if(jokerCount == 3){ // can match any other card in the hand
+			return true;
+		} else if(jokerCount == 2){ // 2 Jokers can match a pair in the hand
+			hand.remove(0);
+			hand.remove(0);
+			return pair(hand,0);
+		} else if(jokerCount == 1){ // 1 Joker can match a 3 of a kind in the hand
+			hand.remove(0);
+			return threeOfAKind(hand,0);
+		} else if(hand.get(0) != null && hand.get(3) != null && hand.get(0).getRank() == hand.get(3).getRank() ||
+			      hand.get(1) != null && hand.get(4) != null && hand.get(1).getRank() == hand.get(4).getRank()){
+			return true; // no Jokers. Must be dealt
+		} else {
+			return false;
+		}
 	}
 
 	private boolean straightFlush(ArrayList<Card> hand, int jokerCount) {
