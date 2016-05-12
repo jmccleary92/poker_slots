@@ -76,7 +76,7 @@ public class Slots {
 		if(betLines >= 1 &&
 		   bet >= 1 &&
 		   balance >= (bet*betLines)){ // make sure there is enough money for this to be ok.
-			balance = balance - bet*betLines;
+			balance -= bet*betLines;
 			deck.shuffle(SHUFFLES); // shuffle the deck then deal them out.
 			for(int i = 0; i < COLUMNS; i++){
 				for(int j = 0; j < ROWS; j++){
@@ -98,8 +98,9 @@ public class Slots {
 				Card a = reels[j][line.get(j)]; // get the card at each reel on the win-line
 				hand.add(a); // add it to a hand
 			}
-			winnings = winnings + winnings(hand); // add winnings from each hand on each line
+			winnings += winnings(hand); // add winnings from each hand on each line
 		}
+		System.out.println("You gained $" + winnings);
 		return winnings;
 	}
 	
