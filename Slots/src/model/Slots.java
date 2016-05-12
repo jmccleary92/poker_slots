@@ -325,13 +325,24 @@ public class Slots {
 		if(jokerCount > 3){
 			return false; // more than 3 jokers means either a straight flush or royal flush
 		} else {
-			Card a = hand.get(jokerCount);
-			Card b = hand.get(jokerCount+1);
-			if(a.getRank()-b.getRank()-1 > jokerCount){
-				return false;
-			}
-			// TODO
-			return false;
+			int i = jokerCount;
+			int j = i;
+			Card a = hand.get(j);
+			Card b = hand.get(j+1);
+			while(b != null){
+				int diff = a.getRank() - b.getRank() - 1;
+				if(diff > i){ // can't be connected by Jokers
+					return false;
+				} else {
+					if(diff > 0){ // take out as many Jokers as needed to make the straight
+						i -= diff;
+					}
+						j++; // go to next cards
+						a = b;
+						b = hand.get(j+1);
+				}
+			} // If we got through the whole hand, then we have a straight!
+			return true;
 		}
 	}
 
