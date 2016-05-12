@@ -53,7 +53,12 @@ public class Slots {
 	private ArrayList<ArrayList<Integer>> blt = new ArrayList<ArrayList<Integer>>(); // the bet lines table.
 	
 	public static void main(String[] args){
-		
+		Slots game0 = new Slots();
+		System.out.println("Welcome to Josh's Poker Slots!");
+		System.out.println("You are starting with a balance of $" + game0.balance);
+		System.out.println("You are betting $" + game0.bet + " on " + game0.betLines + " bet lines");
+		System.out.println("for a total bet of $" + game0.bet*game0.betLines);
+		System.out.println("You have " + game0.autoSpin + " more automatic spins");
 	}
 	
 	public Slots(){ // create a new game of slots.
