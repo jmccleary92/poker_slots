@@ -368,8 +368,31 @@ public class Slots {
 	}
 
 	private boolean fullHouse(ArrayList<Card> hand, int jokerCount) {
-		// TODO Auto-generated method stub
-		return false;
+		if(jokerCount > 1){
+			return false; // more than 1 Joker means at least four of a kind
+		} else if(jokerCount == 1){ // must be two pair with a Joker
+			hand.remove(0); // remove the Joker from the hand and check for 2 pair
+			return twoPair(hand,0);
+		} else { // no Jokers. Must be a full-dealt hand
+			Card a = hand.get(0);
+			Card b = hand.get(1);
+			if(a.getRank() != b.getRank()){ // first two cards must match
+				return false;
+			} else {
+				a = hand.get(3);
+				b = hand.get(4);
+				if(a.getRank() != b.getRank()){ // last two cards must match
+					return false;
+				} else {
+					a = hand.get(0);
+					if (hand.get(2).getRank() != a.getRank() && hand.get(2).getRank() != b.getRank()){ // middle card must match something
+						return false;
+					} else { // if we get here, we have a full house!
+						return true;
+					}
+				}
+			}
+		}
 	}
 
 	private boolean fourOfAKind(ArrayList<Card> hand, int jokerCount) {
