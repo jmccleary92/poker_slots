@@ -347,8 +347,24 @@ public class Slots {
 	}
 
 	private boolean flush(ArrayList<Card> hand, int jokerCount) {
-		// TODO Auto-generated method stub
-		return false;
+		if(jokerCount > 3){
+			return false; // more than 3 Jokers means a straight or royal flush
+		} else {
+			int i = jokerCount;
+			Card a = hand.get(i);
+			Card b = hand.get(i+1);
+			int suit = a.getSuit();
+			while(b != null){
+				if(b.getSuit() != suit){ // cards not the same suit
+					return false;
+				} else {
+					i++; // go to the next cards
+					a = b;
+					b = hand.get(i+1);
+				}
+			} // If we got through the whole hand, then we have a flush!
+			return true;
+		}
 	}
 
 	private boolean fullHouse(ArrayList<Card> hand, int jokerCount) {
