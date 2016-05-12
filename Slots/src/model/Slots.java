@@ -265,13 +265,12 @@ public class Slots {
 		} else { // must be dealt only a single pair
 			int i = 0;
 			Card a = hand.get(i);
-			Card b = hand.get(i+1);
-			while(a.getRank()!= b.getRank() && b != null){ // iterate through the hand
+			int rank = a.getRank();
+			while(a.getRank()!= rank && a != null){ // iterate through the hand
 				i++;
-				a = b;
-				b = hand.get(i+1);
+				a = hand.get(i);
 			}
-			if(b == null){
+			if(a == null){
 				return false;
 			}
 			return true;
@@ -329,17 +328,15 @@ public class Slots {
 			int j = i;
 			Card a = hand.get(j);
 			Card b = hand.get(j+1);
-			while(b != null){
+			while(b != null && i >= 0){
 				int diff = a.getRank() - b.getRank() - 1;
 				if(diff > i){ // can't be connected by Jokers
 					return false;
 				} else {
-					if(diff > 0){ // take out as many Jokers as needed to make the straight
-						i -= diff;
-					}
-						j++; // go to next cards
-						a = b;
-						b = hand.get(j+1);
+					i -= diff; // take out as many Jokers as needed to make the straight
+					j++; // go to next cards
+					a = b;
+					b = hand.get(j+1);
 				}
 			} // If we got through the whole hand, then we have a straight!
 			return true;
@@ -352,15 +349,13 @@ public class Slots {
 		} else {
 			int i = jokerCount;
 			Card a = hand.get(i);
-			Card b = hand.get(i+1);
 			int suit = a.getSuit();
-			while(b != null){
-				if(b.getSuit() != suit){ // cards not the same suit
+			while(a != null){
+				if(a.getSuit() != suit){ // cards not the same suit
 					return false;
 				} else {
 					i++; // go to the next cards
-					a = b;
-					b = hand.get(i+1);
+					a = hand.get(i);
 				}
 			} // If we got through the whole hand, then we have a flush!
 			return true;
@@ -371,8 +366,9 @@ public class Slots {
 		if(jokerCount > 1){
 			return false; // more than 1 Joker means at least four of a kind
 		} else if(jokerCount == 1){ // must be two pair with a Joker
-			hand.remove(0); // remove the Joker from the hand and check for 2 pair
-			return twoPair(hand,0);
+			ArrayList<Card> newHand = hand;
+			newHand.remove(0); // remove the Joker from the hand and check for 2 pair
+			return twoPair(newHand,0);
 		} else { // no Jokers. Must be a full-dealt hand
 			Card a = hand.get(0);
 			Card b = hand.get(1);
@@ -402,12 +398,14 @@ public class Slots {
 		} else if(jokerCount == 3){ // can match any other card in the hand
 			return true;
 		} else if(jokerCount == 2){ // 2 Jokers can match a pair in the hand
-			hand.remove(0);
-			hand.remove(0);
-			return pair(hand,0);
+			ArrayList<Card> newHand = hand;
+			newHand.remove(0);
+			newHand.remove(0);
+			return pair(newHand,0);
 		} else if(jokerCount == 1){ // 1 Joker can match a 3 of a kind in the hand
-			hand.remove(0);
-			return threeOfAKind(hand,0);
+			ArrayList<Card> newHand = hand;
+			newHand.remove(0);
+			return threeOfAKind(newHand,0);
 		} else if(hand.get(0) != null && hand.get(3) != null && hand.get(0).getRank() == hand.get(3).getRank() ||
 			      hand.get(1) != null && hand.get(4) != null && hand.get(1).getRank() == hand.get(4).getRank()){
 			return true; // no Jokers. Must be dealt
@@ -417,13 +415,97 @@ public class Slots {
 	}
 
 	private boolean straightFlush(ArrayList<Card> hand, int jokerCount) {
-		// TODO Auto-generated method stub
-		return false;
+		if(jokerCount > 4){ // more than 4 Jokers means an automatic royal flush
+			return false;
+		} else {
+			// first check if its a flush
+			int i = jokerCount;
+			Card a = hand.get(i);
+			int suit = a.getSuit();
+			while(a != null){
+				if(a.getSuit() != suit){ // cards not the same suit
+					return false;
+				} else {
+					i++; // go to the next cards
+					a = hand.get(i);
+				}
+			} // If we got through the whole hand, then we have a flush!
+			
+			// now check for the straight
+			i = jokerCount;
+			int j = i;
+			a = hand.get(j);
+			Card b = hand.get(j+1);
+			while(b != null && i >= 0){
+				int diff = a.getRank() - b.getRank() - 1;
+				if(diff > i){ // can't be connected by Jokers
+					return false;
+				} else {
+					i -= diff; // take out as many Jokers as needed to make the straight
+					j++; // go to next cards
+					a = b;
+					b = hand.get(j+1);
+				}
+			} // if we make it here, it's a straight flush!
+		}
+		return true;
 	}
 
 	private boolean royalFlush(ArrayList<Card> hand, int jokerCount) {
-		// TODO Auto-generated method stub
-		return false;
+		if(jokerCount == 5){ // automatic royal flush
+			return true;
+		} else { // need to iterate through the hand and see what we have
+			// all non-Jokers must be rank 10-A
+			if(hand.get(4).getRank() < 10){ // cards in order. last must be > 10 to ensure rank
+				return false;
+			} else {
+				boolean have10 = false;
+				boolean haveJ = false;
+				boolean haveQ = false;
+				boolean haveK = false;
+				boolean haveA = false;
+				int i = jokerCount;
+				Card a = hand.get(i);
+				int suit = a.getSuit();
+				while(a != null){ // iterate through the hand and ensure we have only 1 of each type
+					switch(a.getRank()){
+					case 10:
+						if(!have10 && a.getSuit() == suit){
+							have10 = true;
+						} else {
+							return false;
+						}
+					case Card.JACK:
+						if(!haveJ && a.getSuit() == suit){
+							haveJ = true;
+						} else {
+							return false;
+						}
+					case Card.QUEEN:
+						if(!haveQ && a.getSuit() == suit){
+							haveQ = true;
+						} else {
+							return false;
+						}
+					case Card.KING:
+						if(!haveK && a.getSuit() == suit){
+							haveK = true;
+						} else {
+							return false;
+						}
+					case Card.ACE:
+						if(!haveA && a.getSuit() == suit){
+							haveA = true;
+						} else {
+							return false;
+						}
+					}
+					i++;
+					a = hand.get(i);
+				}
+				return true;
+			}
+		}
 	}
 
 	private void orderHand(ArrayList<Card> hand){ // puts a poker hand in Rank order.
